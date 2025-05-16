@@ -1,0 +1,49 @@
+import pandas as pd
+from textblob import TextBlob
+
+# Sample social media data
+data = {
+    "Username": ["@user123", "@musicfan", "@techguy", "@traveler99", "@chef_life"],
+    "Text": [
+        "I love how supportive everyone is here!",
+        "Feeling down today. Nothing seems to work.",
+        "The update is okay, not much has changed.",
+        "This trip was an absolute nightmare!",
+        "Made the best pasta today! So happy!"
+    ]
+}
+
+# Create a DataFrame
+df = pd.DataFrame(data)
+
+# Function to classify sentiment label
+def get_sentiment_label(score):
+    if score > 0.2:
+        return "Positive"
+    elif score < -0.2:
+        return "Negative"
+    else:
+        return "Neutral"
+
+# Basic emotion classifier using keywords
+def detect_emotion(text):
+    text = text.lower()
+    if any(word in text for word in ["happy", "love", "excited", "best", "great"]):
+        return "Joy"
+    elif any(word in text for word in ["sad", "down", "depressed", "tired"]):
+        return "Sadness"
+    elif any(word in text for word in ["angry", "nightmare", "hate", "worst"]):
+        return "Anger"
+    else:
+        return "Neutral"
+
+# Apply analysis
+df["Sentiment_Score"] = df["Text"].apply(lambda x: TextBlob(x).sentiment.polarity)
+df["Sentiment_Label"] = df["Sentiment_Score"].apply(get_sentiment_label)
+df["Emotion"] = df["Text"].apply(detect_emotion)
+
+# Print results
+print(df)
+
+# Optional: Save to CSV
+df.to_csv("analyzed_social_media_data.csv", index=False)
